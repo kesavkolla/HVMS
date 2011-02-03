@@ -4,7 +4,7 @@
     }
     else {
         echo $form->create('User', array('action' => 'forgot'));
-        echo $form->input('username');   
+        echo $form->input('username', array('label' => 'Email'));   
         echo $form->end('Reset my password');
     }
 ?>

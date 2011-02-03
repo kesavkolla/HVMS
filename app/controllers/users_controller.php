@@ -12,8 +12,8 @@ class UsersController extends AppController {
                                             'port' => '465', 
                                             'timeout' => '30', 
                                             'host' => 'ssl://smtp.gmail.com', 
-                                            'username' => '<teju.prasad@gmail.com>', 
-                                            'password' => 'mypass'); 
+                                            'username' => 'hvmstest@healthvms.com', 
+                                            'password' => 'healthvms'); 
             $this->Security->blackHoleCallback = 'forceSsl';
             $this->Security->requireSecure('login', 'register', 'checkEmail');
              parent::beforeFilter();
@@ -140,16 +140,18 @@ class UsersController extends AppController {
             $this->set('otp', $resetInfo['otp']);
 
             $this->Email->to = $user['username'];
-            $this->Email->from = 'HealthVMS <teju.prasad@gmail.com>'; // TODO - put in config
+            $this->Email->from = 'HealthVMS <noreply@healthvms.com>'; 
             $this->Email->subject = 'Password reset request';
             $this->Email->template = 'reset_pw';
             
-            $this->Email->delivery = 'debug';
-    
+            $this->Email->delivery = 'smtp';
+            $this->Email->sendAs = 'html';
             $this->Email->send();
-            pr($this->Session->read('Message.email.message'));
             $this->Session->setFlash('We\'ve sent  you a link at ' . $user['username'] . ', please click on it to reset your password');
-        } 
+        }
+        else if ($this->data) {
+            $this->Session->setFlash('We were unable to find your email in our system. Please enter the email that you used to register with us.');
+        }
     }
 
     function auto_reset_pw($OTP, $expiry, $userID)  {
@@ -191,6 +193,8 @@ class UsersController extends AppController {
     private function generateResetPwLink() {
         if ($this->data && isset($this->data['User']['username'])) {
             $user = $this->User->findByUsername($this->data['User']['username']);
+            if (!$user)
+                return null;
             $expiry = time() + 86400; // 24 hours from now
             $userID = $user['User']['id'];
             $OTP = $this->generateOTP($expiry, $userID, $user['User']['password']);
@@ -220,11 +224,9 @@ class UsersController extends AppController {
         $this->Email->subject = 'Please confirm your registration with HealthVMS';
         $this->Email->template = 'reg_confirm';
         
-        $this->Email->delivery = 'debug';
-
+        $this->Email->delivery = 'smtp';
+        $this->Email->sendAs = 'html';
         $this->Email->send();
-        
-        pr($this->Session->read('Message.email'));
     }
     
     private function validUserDomain() {

@@ -5,6 +5,15 @@ class InterestsController extends AppController {
 	
 	public $components = array('Session', 'Email');
 
+    function beforeFilter() {
+		$this->Email->smtpOptions = array( 
+										'port' => '465', 
+										'timeout' => '30', 
+										'host' => 'ssl://smtp.gmail.com', 
+										'username' => 'hvmstest@healthvms.com', 
+										'password' => 'healthvms');
+	}
+	
     function flag() {
         $this->autoRender = false;
 
@@ -68,15 +77,14 @@ class InterestsController extends AppController {
 			$this->set('interestQueryString', $interestQueryString);
 		}
 		
-		$this->Email->to = 'admin@hvms.com';
-		$this->Email->from = 'HealthVMS <teju.prasad@gmail.com>'; // TODO - put in config
+		$this->Email->to = 'hvmstest@hvms.com';
+		$this->Email->from = 'HealthVMS <noreply@healthvms.com>';
 		$this->Email->subject = 'Interest Indicated';
 		$this->Email->template = 'new_interest';
 		
-		//$this->Email->delivery = 'debug';
-
+		$this->Email->delivery = 'smtp';
+		$this->Email->sendAs = 'html';
 		$this->Email->send();
-		//pr($this->Session->read('Message.email.message'));
 	}
 	
 	function index() {

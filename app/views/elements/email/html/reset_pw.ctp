@@ -2,12 +2,13 @@
 
 
 Dear <?php echo $username ?>,
-<br/>
+<br/><br/>
 The new password you requested is: <?php echo $otp ?>. To reset your password, click
 <br/>
 <?php echo $html->link($resetPwLink, $resetPwLink); ?>
-<br/> 
+<br/> <br/>
 or copy and paste the following link in your browser:
-<?php echo $resetPwLink ?>
 <br/>
+<?php echo $resetPwLink ?>
+<br/><br/>
 If you have not requested a new password, please ignore this email.
